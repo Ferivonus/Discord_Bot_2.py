@@ -6,6 +6,7 @@ import random
 import asyncio
 import logging
 from discord.ext import commands
+from discord.ext.context import ctx
 from discord.voice_client import VoiceClient
 from replit import db
 from keep_alive import keep_alive
@@ -14,7 +15,7 @@ from keep_alive import keep_alive
 intents = discord.Intents.all()
 client = discord.Client()
 
-client = commands.Bot(command_prefix = "!", intents=intents)
+client = commands.Bot(command_prefix = "$", intents=intents)
 
 my_secret = os.environ['Private']
 
@@ -23,6 +24,18 @@ def get_quote():
   json_data = json.loads(response.text)
   quote = json_data[0]['q'] + " -" + json_data[0]['a']
   return(quote)
+
+@client.command()
+async def ping(ctx):
+    await ctx.send(f"pong {round(client.latency * 1000)}ms")
+    server = ctx.message.author.guild
+    server_name = server.name
+    server_id = server.id
+    server_owner = server.owner.name
+    await ctx.send("server name: {}\n"
+          "server id: {}\n"
+          "server owner: {}"
+          .format(server_name, server_id, server_owner))
 
 
 @client.event
@@ -33,17 +46,36 @@ async def on_ready():
 #welcome message
 @client.event
 async def on_member_join(member):
+  mbed = discord.Embed(
+    colour = (discord.Colour.magenta()),
+    title = 'Sunucuma hoş geldin canım arkadaşımız 🥰',
+    description = f' Sunucumuza normalde çok insan almayız ve almamız da seni özel gördüğümüz anlamına gelir, umarım eğlenirsin {member.mention}, eğer bir problem olursa ferivonus a haber verebilirsin 😣'
+  )
+  await member.send(embed=mbed)
+  print("log in worked")
   channel = discord.utils.get(member.guild.channels, name='genel')
-  await channel.send(f"Hoş geldin {member.mention}  umarım çok eğlenirsin.")
-  await member.send(f"Hoş geldin {member.mention} umarım çok eğlenirsin.")
-  
+  embed=discord.Embed(colour = (discord.Colour.magenta()),title="Sunucuya yeni birisi geldi!", description = f"hoş geldin {member.mention}, aramıza katılabileceğine eminim, umarım çok mutlu olursun ve aramızda yerinin olduğunu hissedebilirsin 🥰")
+  await channel.send(embed=embed)
+  print("log in worked")
 
 #goodbye message
 @client.event
+
 async def on_member_remove(member):
+  mbed = discord.Embed(
+    colour = (discord.Colour.magenta()),
+    title = 'Gittiğin için çok üzgünüz...',
+    description = f' Sunucumuzdan çıkma nedenini anlayamasamda benim çözebileceğim bir şey varsa lütfen ferivonusa haber ver, problem yaşamak ya da üzgün bir insan kalsın istiyorum, umarım çok mutlu olursun, {member.mention} kendine iyi bak 😔'
+    )
+  await member.send(embed = mbed)
+  print("log out worked")
   channel = discord.utils.get(member.guild.channels, name='genel')
-  await channel.send(f'Arkadaşlar {member.mention} çıktı, haberiniz olsun!')
-  await member.send(f'Arkadaşlar {member.mention} çıktı, haberiniz olsun!')
+  embed=discord.Embed(colour = (discord.Colour.magenta()),title="Aramızdan birisi ayrıldı...", description = f"Gitti... {member.mention}, aramızdan ayrıldı... Neden çıktığını sorabilen var mı? öğrenmem gerekiyor gibi hissediyorum, umarım çok bir şey olmamıştır... 😞")
+  await channel.send(embed=embed)
+  print("log out worked")
+  
+  
+
 
 
 keep_alive()
