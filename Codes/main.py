@@ -36,7 +36,19 @@ async def ping(ctx):
           "server id: {}\n"
           "server owner: {}"
           .format(server_name, server_id, server_owner))
+    try:
+        # Create target Directory
+        os.mkdir(str(server.name))
+        print("Guild Directory ", str(server.name),  " Created ") 
+    except FileExistsError:pass
+        #print("Guild Directory ", str(server.name),  " already exists")
 
+    with open(str(server.name) + "\\" + str(server.name) + "_info.json", "w") as s:
+        e = "Server name: " + server.name + "\n" + "Server ID: " + str(server_id) + "\n" + "Server Owner: " + server_owner
+        #print(e)
+        s.write(e)
+        s.close()
+  
 
 @client.event
 async def on_ready():
@@ -74,8 +86,6 @@ async def on_member_remove(member):
   await channel.send(embed=embed)
   print("log out worked")
   
-  
-
 
 
 keep_alive()
