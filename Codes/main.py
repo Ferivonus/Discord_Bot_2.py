@@ -10,14 +10,24 @@ from discord.ext.context import ctx
 from discord.voice_client import VoiceClient
 from replit import db
 from keep_alive import keep_alive
+import music
 
 
-intents = discord.Intents.all()
+
+
 client = discord.Client()
+intents = discord.Intents.all()
 
 client = commands.Bot(command_prefix = "$", intents=intents)
 
 my_secret = os.environ['Private']
+
+#music bot:
+
+cogs = [music]
+
+for i in range(len(cogs)):
+  cogs[i].setup(client)
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
